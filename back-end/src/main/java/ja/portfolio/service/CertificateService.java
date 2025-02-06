@@ -19,7 +19,7 @@ public class CertificateService {
 	}
 	
 	public Certificate getCertificateById(Long id) throws CertificateNotFoundException {
-		return repository.findById(id).orElseThrow(()-> new CertificateNotFoundException("No se ha encontrado el certificado con id" + id));
+		return repository.findById(id).orElseThrow(()-> new CertificateNotFoundException("Certificate with id " + id + " not found."));
 	}
 	
 	public Certificate saveCertificate(Certificate certificate) {
