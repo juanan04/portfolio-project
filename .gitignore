@@ -4,5 +4,12 @@ build/
 .env
 
 # Java & Spring Boot
+*.class
+*/.metadata/
+/.metadata/
+/.settings/
+.settings
+.classpath
+*/target/
 target/
-*.log
+*.project
