@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ja.portfolio.model.Project;
 import ja.portfolio.service.ProjectNotFoundException;
 import ja.portfolio.service.ProjectService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -28,29 +30,39 @@ public class ProjectApiService {
 	private ProjectService service;
 	
 	@GetMapping
+	@Operation(summary = "Get all projects")
 	public List<Project> getAllProjects() {
 		return service.getAllProjects();
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Project> getProjectById(@PathVariable Long id) throws ProjectNotFoundException {
-		Project p = service.getProjectById(id);
-		return p != null ? ResponseEntity.ok(p) : ResponseEntity.notFound().build();
+	@Operation(summary = "Get projects by ID", description = "You can get a project by ID.")
+	public ResponseEntity<?> getProjectById(@PathVariable Long id) {
+	    try {
+	        Project project = service.getProjectById(id);
+	        return ResponseEntity.ok(project);
+	    } catch (ProjectNotFoundException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    }
 	}
+
 	
 	@GetMapping("/search")
+	@Operation(summary = "Get projects by filter", description = "Allows you to get a project by filter (title or technology)")
 	public List<Project> getProjectsByFilter (String filtro) {
 		return service.getProjectsByFilter(filtro);
 	}
 	
 	@PostMapping
-	public ResponseEntity<Project> createProject(@RequestBody Project project) {
+	@Operation(summary = "Create Project", description = "Allows you to create a new project")
+	public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
 		Project savedProject = service.saveProject(project);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedProject);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project updatedProject) throws ProjectNotFoundException {
+	@Operation(summary = "Update Project", description = "Allows you to update an existing project.")
+	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project updatedProject) throws ProjectNotFoundException {
 		Project project = service.getProjectById(id);
 		if (project != null) {
 			updatedProject.setId(id);
@@ -60,6 +72,7 @@ public class ProjectApiService {
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete Project", description = "Allows you to delte an existing project with the ID.")
 	public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
 		service.deleteProject(id);
 		return ResponseEntity.noContent().build();

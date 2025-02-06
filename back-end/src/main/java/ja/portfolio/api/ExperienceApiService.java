@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ja.portfolio.model.Experience;
 import ja.portfolio.service.ExperienceNotFoundException;
 import ja.portfolio.service.ExperienceService;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/experience")
+@RequestMapping("/api/experiences")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ExperienceApiService {
 
@@ -27,23 +29,32 @@ public class ExperienceApiService {
 	private ExperienceService service;
 	
 	@GetMapping
+	@Operation(summary = "Get all the experiences")
 	public List<Experience> getAllExperiences() {
 		return service.getAllExperiences();
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Experience> getExperienceById(@PathVariable Long id) throws ExperienceNotFoundException {
-		Experience experience = service.getExperienceById(id);
-		return experience != null ? ResponseEntity.ok(experience) : ResponseEntity.notFound().build();
+	@Operation(summary = "Get experience by ID", description = "You can get a single experience by ID")
+	public ResponseEntity<?> getExperienceById(@PathVariable Long id) {
+	    try {
+	        Experience experience = service.getExperienceById(id);
+	        return ResponseEntity.ok(experience);
+	    } catch (ExperienceNotFoundException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    }
 	}
+
 	
 	@PostMapping
-	public ResponseEntity<Experience> createExperience(@RequestBody Experience experience) {
+	@Operation(summary = "Create new Experience", description = "Allow you to create a new experience inserting the company or school name, the role and the end and starts dates")
+	public ResponseEntity<Experience> createExperience(@Valid @RequestBody Experience experience) {
 		Experience savedExperience = service.saveExperience(experience);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedExperience);
 	}
 	
 	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete Experience", description = "Allow you to delete an existing experience with the ID.")
 	public ResponseEntity<Void> deleteExperience(@PathVariable Long id)  {
 		service.deleteExperience(id);
 		return ResponseEntity.noContent().build();

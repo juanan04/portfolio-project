@@ -1,6 +1,9 @@
 package ja.portfolio.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,25 @@ public class ProjectService {
 	}
 	
 	public List<Project> getProjectsByFilter (String filtro) {
-		return repository.searchProjects(filtro);
+		Set<Project> result = new HashSet<>();
+		
+		// Buscar por título
+		result.addAll(repository.findByTitleContainingIgnoringCase(filtro));
+		
+		// Buscar manualmente en la lista de tecnologías
+		List<Project> allProjects = repository.findAll();
+		for (Project project : allProjects) {
+			if (project.getTechnologies() != null) {
+				for (String tech : project.getTechnologies()) {
+					if (tech.toLowerCase().contains(filtro.toLowerCase())) {
+						result.add(project);
+						break;
+					}
+				}
+			}
+		}
+		
+		return new ArrayList<>(result);
 	}
 	
 	public Project saveProject (Project project) {
