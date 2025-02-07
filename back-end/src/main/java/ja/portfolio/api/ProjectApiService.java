@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ja.portfolio.model.Project;
 import ja.portfolio.service.ProjectNotFoundException;
 import ja.portfolio.service.ProjectService;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/projects")
 @CrossOrigin(origins = "http://localhost:3000") // Permite a React acceder a la API
+@SecurityRequirement(name = "Authorization")
 public class ProjectApiService {
 
 	@Autowired
@@ -56,25 +58,30 @@ public class ProjectApiService {
 	
 	@PostMapping
 	@Operation(summary = "Create Project", description = "Allows you to create a new project")
-	public ResponseEntity<Project> createProject(@Valid @RequestBody Project project, @RequestHeader("X-API-KEY") String apiKey) {
+	public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
 		Project savedProject = service.saveProject(project);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedProject);
 	}
 	
 	@PutMapping("/{id}")
 	@Operation(summary = "Update Project", description = "Allows you to update an existing project.")
-	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project updatedProject, @RequestHeader("X-API-KEY") String apiKey) throws ProjectNotFoundException {
-		Project project = service.getProjectById(id);
-		if (project != null) {
-			updatedProject.setId(id);
-			return ResponseEntity.ok(service.saveProject(project));
-		}
-		return ResponseEntity.notFound().build();
+	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project updatedProject) throws ProjectNotFoundException {
+	    Project project = service.getProjectById(id);
+	    if (project == null) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    // Solo actualiza los campos que no sean nulos
+	    if (updatedProject.getTitle() != null) project.setTitle(updatedProject.getTitle());
+	    if (updatedProject.getDescription() != null) project.setDescription(updatedProject.getDescription());
+	    if (updatedProject.getTechnologies() != null) project.setTechnologies(updatedProject.getTechnologies());
+
+	    return ResponseEntity.ok(service.saveProject(project));
 	}
 	
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete Project", description = "Allows you to delte an existing project with the ID.")
-	public ResponseEntity<Void> deleteProject(@PathVariable Long id, @RequestHeader("X-API-KEY") String apiKey) {
+	public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
 		service.deleteProject(id);
 		return ResponseEntity.noContent().build();
 	}
