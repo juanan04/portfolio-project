@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ja.portfolio.model.Certificate;
 import ja.portfolio.service.CertificateNotFoundException;
 import ja.portfolio.service.CertificateService;
@@ -25,7 +24,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/certificates")
 @CrossOrigin(origins = "http://localhost:3000")
-@SecurityRequirement(name = "Authorization")
 public class CertificateApiService {
 
 	@Autowired

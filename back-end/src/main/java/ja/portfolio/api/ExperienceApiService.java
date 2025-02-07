@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ja.portfolio.model.Experience;
 import ja.portfolio.service.ExperienceNotFoundException;
 import ja.portfolio.service.ExperienceService;
@@ -25,7 +24,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/experiences")
 @CrossOrigin(origins = "http://localhost:3000")
-@SecurityRequirement(name = "Authorization")
 public class ExperienceApiService {
 
 	@Autowired
@@ -51,7 +49,7 @@ public class ExperienceApiService {
 	
 	@PostMapping
 	@Operation(summary = "Create new Experience", description = "Allow you to create a new experience inserting the company or school name, the role and the end and starts dates")
-	public ResponseEntity<Experience> createExperience(@Valid @RequestBody Experience experience, @RequestHeader("X-API-KEY") String apiKeyS) {
+	public ResponseEntity<Experience> createExperience(@Valid @RequestBody Experience experience, @RequestHeader("X-API-KEY") String apiKey) {
 		Experience savedExperience = service.saveExperience(experience);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedExperience);
 	}

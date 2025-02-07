@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ja.portfolio.model.Project;
 import ja.portfolio.service.ProjectNotFoundException;
 import ja.portfolio.service.ProjectService;
@@ -26,7 +25,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/projects")
 @CrossOrigin(origins = "http://localhost:3000") // Permite a React acceder a la API
-@SecurityRequirement(name = "Authorization")
 public class ProjectApiService {
 
 	@Autowired

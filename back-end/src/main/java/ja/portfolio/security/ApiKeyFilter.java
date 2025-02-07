@@ -20,8 +20,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 	
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		String path = request.getRequestURI();
-		return (path.startsWith("/swagger") || path.startsWith("/api/"));
+	    String path = request.getRequestURI();
+	    return (path.startsWith("/swagger") || path.startsWith("/api/") || path.startsWith("/login") || 
+	            path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui"));
 	}
 
 	@Override
