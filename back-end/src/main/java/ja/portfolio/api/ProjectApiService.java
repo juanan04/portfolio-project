@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/projects")
-@CrossOrigin(origins = "http://localhost:3000") // Permite a React acceder a la API
+@CrossOrigin(origins = "http://localhost:5173") // Permite a React acceder a la API
 @SecurityRequirement(name = "Authorization")
 public class ProjectApiService {
 
