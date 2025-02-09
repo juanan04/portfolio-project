@@ -15,11 +15,11 @@ public class CorsConfig implements WebMvcConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Aplica CORS a todas las rutas
-                        .allowedOrigins("http://localhost:5173") // Permitir el frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos HTTP permitidos
-                        .allowedHeaders("*") // Permitir todos los headers
-                        .allowCredentials(true); // Permitir credenciales (si usas autenticación con cookies o JWT)
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173") // ✅ Permitir solicitudes del frontend
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }

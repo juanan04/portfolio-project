@@ -6,7 +6,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // URL del backend (ajusta según tu configuración)
+    // URL del backend
     const API_URL = "http://localhost:8080/auth/login";
 
     useEffect(() => {
@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
                 },
+                credentials: "include", // Asegura que las credenciales sean enviadas si usas cookies
                 body: JSON.stringify({ username, password }),
             });
 

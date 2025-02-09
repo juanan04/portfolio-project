@@ -1,5 +1,7 @@
 package ja.portfolio.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,14 @@ public class AuthService {
 	private PasswordEncoder passwordEncoder;
 	
 	public boolean authenticate(String username, String password) {
-		return repository.findByUsername(username)
-				.map(user -> passwordEncoder.matches(password, user.getPassword()))
-				.orElse(false);
+		Optional<User> userDb = repository.findByUsername(username);
+		
+		if (userDb.isEmpty()) {
+			return false;
+		}
+		
+		User user = userDb.get();
+		return passwordEncoder.matches(password, user.getPassword());
 	}
 	
 	// Método para registrar usuarios con contraseña hasheada
