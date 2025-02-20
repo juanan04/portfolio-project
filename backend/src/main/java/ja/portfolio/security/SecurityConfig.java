@@ -45,8 +45,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
             		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/login").permitAll() // ✅ Permitir acceso sin autenticación
-                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/auth/login", "/api/public/**").permitAll() // ✅ Permitir acceso sin autenticación
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger/**").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class); // ✅ Filtrar antes de la autenticación

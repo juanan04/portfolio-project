@@ -1,0 +1,142 @@
+.admin-container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: #1F1F1F;
+    color: white;
+    border-radius: 10px;
+}
+
+.admin-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.project-card {
+    background: #2A2A2A;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+.project-card:hover {
+    transform: scale(1.03);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.project-links {
+    margin-top: 10px;
+}
+
+.project-links a {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: #3A3A3A;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.project-links a:hover {
+    background: #555555;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.delete-btn:hover {
+    background: darkred;
+}
+
+.add-project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.add-project-form input,
+.add-project-form textarea {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #2A2A2A;
+    color: white;
+    font-size: 14px;
+}
+
+.add-project-form textarea {
+    resize: none;
+    height: 80px;
+}
+
+.add-btn {
+    background: #3A3A3A;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.add-btn:hover {
+    background: #555555;
+}
+
+.tech-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.tech-tag {
+    background: #3A3A3A;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.tech-tag button {
+    background: transparent;
+    border: none;
+    color: red;
+    margin-left: 5px;
+    cursor: pointer;
+}

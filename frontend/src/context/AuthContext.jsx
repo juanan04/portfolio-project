@@ -1,58 +1,49 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
+// ✅ Creamos el contexto de autenticación
 const AuthContext = createContext();
 
+// ✅ Creamos el Provider que envolverá nuestra App
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(() => {
+        return JSON.parse(localStorage.getItem("user")) || null;
+    });
 
-    // URL del backend
-    const API_URL = "http://localhost:8080/auth/login";
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
-    }, []);
-
+    // ✅ Función para iniciar sesión
     const login = async (username, password) => {
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch("http://localhost:8080/auth/login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-                credentials: "include", // Asegura que las credenciales sean enviadas si usas cookies
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
             });
 
-            if (!response.ok) {
-                throw new Error("Invalid credentials");
-            }
+            if (!response.ok) throw new Error("Invalid credentials");
 
             const data = await response.json();
-            localStorage.setItem("user", JSON.stringify(data)); // Guardamos el usuario y token
             setUser(data);
+            localStorage.setItem("user", JSON.stringify(data));
             return true;
         } catch (error) {
-            console.error("Login failed:", error.message);
+            console.error("Login failed:", error);
             return false;
         }
     };
 
+    // ✅ Función para cerrar sesión
     const logout = () => {
-        localStorage.removeItem("user");
         setUser(null);
+        localStorage.removeItem("user");
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export default AuthContext;
+// 🔥 Aquí es donde exportamos useAuth correctamente
+export const useAuth = () => {
+    return useContext(AuthContext);
+};

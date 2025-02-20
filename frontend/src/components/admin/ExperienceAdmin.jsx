@@ -1,66 +1,67 @@
 import { useState, useEffect } from "react";
+import "./ExperienceAdmin.css";
 
 function ExperienceAdmin() {
-    const [experience, setExperience] = useState([]);
-    const [newExperience, setNewExperience] = useState({ company: "", startDate: "", endDate: "" });
-    const API_URL = "http://localhost:8080/api/experience";
+    const [experiences, setExperiences] = useState([]);
+    const [newExperience, setNewExperience] = useState({
+        company: "",
+        position: "",
+        startDate: "",
+        endDate: "",
+        description: ""
+    });
+    const API_URL = "http://localhost:8080/api/experiences";
 
     useEffect(() => {
         fetch(API_URL)
             .then((res) => res.json())
-            .then((data) => setExperience(data))
-            .catch((error) => console.error("Error loading experience:", error));
+            .then((data) => setExperiences(data))
+            .catch((error) => console.error("Error loading experiences:", error));
     }, []);
 
     const handleAddExperience = async () => {
-        if (!newExperience.company) return;
+        if (!newExperience.company || !newExperience.position) return;
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newExperience),
         });
         if (response.ok) {
-            const addedExp = await response.json();
-            setExperience([...experience, addedExp]);
-            setNewExperience({ company: "", startDate: "", endDate: "" });
+            const addedExperience = await response.json();
+            setExperiences([...experiences, addedExperience]);
+            setNewExperience({ company: "", position: "", startDate: "", endDate: "", description: "" });
         }
     };
 
     const handleDeleteExperience = async (id) => {
         await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-        setExperience(experience.filter((exp) => exp.id !== id));
+        setExperiences(experiences.filter((exp) => exp.id !== id));
     };
 
     return (
-        <div>
-            <h2>Manage Experience</h2>
-            <ul>
-                {experience.map((exp) => (
-                    <li key={exp.id}>
-                        {exp.company} ({exp.startDate} - {exp.endDate})
-                        <button onClick={() => handleDeleteExperience(exp.id)}>Delete</button>
-                    </li>
+        <div className="admin-container">
+            <h2 className="admin-title">Manage Experience</h2>
+            <div className="experience-grid">
+                {experiences.map((exp) => (
+                    <div key={exp.id} className="experience-card">
+                        <div className="experience-header">
+                            <h3>{exp.position} at {exp.company}</h3>
+                            <button className="delete-btn" onClick={() => handleDeleteExperience(exp.id)}>✖</button>
+                        </div>
+                        <p><strong>Period:</strong> {exp.startDate} - {exp.endDate}</p>
+                        <p>{exp.description}</p>
+                    </div>
                 ))}
-            </ul>
-
-            <h3>Add Experience</h3>
-            <input
-                type="text"
-                placeholder="Company"
-                value={newExperience.company}
-                onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
-            />
-            <input
-                type="date"
-                value={newExperience.startDate}
-                onChange={(e) => setNewExperience({ ...newExperience, startDate: e.target.value })}
-            />
-            <input
-                type="date"
-                value={newExperience.endDate}
-                onChange={(e) => setNewExperience({ ...newExperience, endDate: e.target.value })}
-            />
-            <button onClick={handleAddExperience}>Add</button>
+            </div>
+            <div className="add-experience-form">
+                <h3>Add New Experience</h3>
+                <input type="text" placeholder="Company" value={newExperience.company} onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })} />
+                <input type="text" placeholder="Position" value={newExperience.position} onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })} />
+                <input type="date" placeholder="Start Date" value={newExperience.startDate} onChange={(e) => setNewExperience({ ...newExperience, startDate: e.target.value })} />
+                <input type="date" placeholder="End Date" value={newExperience.endDate} onChange={(e) => setNewExperience({ ...newExperience, endDate: e.target.value })} />
+                <textarea placeholder="Description" value={newExperience.description} onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}></textarea>
+                <button className="add-btn" onClick={handleAddExperience}>➕ Add Experience</button>
+            </div>
         </div>
     );
 }
