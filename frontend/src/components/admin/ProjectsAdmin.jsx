@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
-import "./ProjectsAdmin.css"; // Asegúrate de crear este archivo CSS
+import "./ProjectsAdmin.css";
+import { getHeaders } from "../../utils/api";
 
 function ProjectsAdmin() {
     const [projects, setProjects] = useState([]);
     const [newProject, setNewProject] = useState({
         title: "",
         description: "",
+        imageUrl: "",
+        githubUrl: "",
+        liveDemoUrl: "",
         technologies: [],
-        repositoryUrl: "",
-        liveDemoUrl: ""
+
     });
     const API_URL = "http://localhost:8080/api/projects";
 
     useEffect(() => {
-        fetch(API_URL)
+        fetch(API_URL, { headers: getHeaders() })
             .then((res) => res.json())
             .then((data) => setProjects(data))
             .catch((error) => console.error("Error loading projects:", error));
@@ -23,18 +26,18 @@ function ProjectsAdmin() {
         if (!newProject.title || !newProject.description) return;
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: getHeaders(),
             body: JSON.stringify(newProject),
         });
         if (response.ok) {
             const addedProject = await response.json();
             setProjects([...projects, addedProject]);
-            setNewProject({ title: "", description: "", technologies: "", repositoryUrl: "", liveDemoUrl: "" });
+            setNewProject({ title: "", description: "", imageUrl: "", githubUrl: "", liveDemoUrl: "", technologies: [], });
         }
     };
 
     const handleDeleteProject = async (id) => {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        await fetch(`${API_URL}/${id}`, { method: "DELETE", headers: getHeaders() });
         setProjects(projects.filter((proj) => proj.id !== id));
     };
 
@@ -68,7 +71,8 @@ function ProjectsAdmin() {
                         <p>{proj.description}</p>
                         <p><strong>Technologies:</strong> {proj.technologies}</p>
                         <div className="project-links">
-                            {proj.repositoryUrl && <a href={proj.repositoryUrl} target="_blank" rel="noopener noreferrer">🔗 Repository</a>}
+                            {proj.imageUrl && <a href={proj.imageUrl} target="_blank" rel="noopener noreferrer">📷 Image Url</a>}
+                            {proj.githubUrl && <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer">🔗 Repository</a>}
                             {proj.liveDemoUrl && <a href={proj.liveDemoUrl} target="_blank" rel="noopener noreferrer">🚀 Live Demo</a>}
                         </div>
                     </div>
@@ -89,7 +93,8 @@ function ProjectsAdmin() {
                     </div>
                 </div>
 
-                <input type="text" placeholder="Repository URL" value={newProject.repositoryUrl} onChange={(e) => setNewProject({ ...newProject, repositoryUrl: e.target.value })} />
+                <input type="text" placeholder="Image Url" value={newProject.imageUrl} onChange={(e) => setNewProject({ ...newProject, imageUrl: e.target.value })} />
+                <input type="text" placeholder="Github URL" value={newProject.githubUrl} onChange={(e) => setNewProject({ ...newProject, githubUrl: e.target.value })} />
                 <input type="text" placeholder="Live Demo URL" value={newProject.liveDemoUrl} onChange={(e) => setNewProject({ ...newProject, liveDemoUrl: e.target.value })} />
                 <button className="add-btn" onClick={handleAddProject}>➕ Add Project</button>
             </div>

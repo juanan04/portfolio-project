@@ -45,11 +45,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
             		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/login", "/api/public/**").permitAll() // ✅ Permitir acceso sin autenticación
+                    .requestMatchers("/auth/login", "/api/**").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger/**").permitAll()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class); // ✅ Filtrar antes de la autenticación
+            .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

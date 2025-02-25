@@ -30,6 +30,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String apiKeyRequest = request.getHeader("X-API-KEY");
+		System.out.println(apiKeyRequest);
 		if(apiKey.equals(apiKeyRequest)) {
 			filterChain.doFilter(request, response);
 		}
