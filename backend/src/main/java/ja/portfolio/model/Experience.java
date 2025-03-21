@@ -7,8 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
@@ -25,8 +25,8 @@ public class Experience {
 	private String role;
 	@PastOrPresent(message = "The startDate should be past or present date")
 	private LocalDate startDate;
-	@FutureOrPresent(message = "The end Date should be present or future date")
+	@NotNull(message = "The end Date should be present or future date")
 	private LocalDate endDate;
 	private String description;
-	
+
 }

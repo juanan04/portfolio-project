@@ -5,6 +5,7 @@
 import Navbar from "../components/Navbar";
 import imgProfile from "../assets/images/me_tank.jpg";
 import { useEffect, useState } from "react";
+import ExperienceCard from "../components/ExperienceCard";
 
 // const About = () => {
 //     const [experiences, setExperiences] = useState([]);
@@ -31,41 +32,21 @@ const About = () => {
     { name: "Tailwind", percentage: 70, color: "#38BDF8" }, // Azul Tailwind
   ];
 
-  // Datos de experiencia
-  const experiences = [
-    { id: 1, title: "G.M.S.M.R.", period: "2020 - 2022" },
-    { id: 2, title: "Help Desk", period: "2022" },
-    { id: 3, title: "G.S.D.A.W.", period: "2022 - 2024" },
-    { id: 4, title: "Junior Developer", period: "2024" },
-    { id: 5, title: "G.S.D.A.M.", period: "2024 - 2025" },
-  ];
+  const [experiences, setExperiences] = useState([]);
   const [selectedExperience, setSelectedExperience] = useState(null);
-
-  // Certificados (Simulación)
   const [certificates, setCertificates] = useState([]);
+
   useEffect(() => {
-    // Aquí haríamos una petición a la API
-    setCertificates([
-      { id: 1, title: "React Certification", provider: "Skillio" },
-      { id: 2, title: "JavaScript Advanced", provider: "Udemy" },
-      { id: 3, title: "Full Stack Developer", provider: "Coursera" },
-    ]);
+    fetch("http://localhost:8080/api/experiences")
+      .then((res) => res.json())
+      .then((data) => setExperiences(data))
+      .catch((error) => console.error("Error loading experiences: ", error));
+
+    fetch("http://localhost:8080/api/certificates")
+      .then((res) => res.json())
+      .then((data) => setCertificates(data))
+      .catch((error) => console.error("Error loading certificates: ", error));
   }, []);
-
-  //   const [experiences, setExperiences] = useState([]);
-  //   const [certificates, setCertificates] = useState([]);
-
-  //   useEffect(() => {
-  //     fetch("http://localhost:8080/api/experiences")
-  //       .then((res) => res.json())
-  //       .then((data) => setExperiences(data))
-  //       .catch((error) => console.error("Error loading experiences: ", error));
-
-  //     fetch("http://localhost:8080/api/certificates")
-  //       .then((res) => res.json())
-  //       .then((data) => setCertificates(data))
-  //       .catch((error) => console.error("Error loading certificates: ", error));
-  //   }, []);
 
   return (
     <div className="min-h-screen bg-[#1F1F1F] text-[#EAEAEA] flex flex-col bg-[radial-gradient(circle,_#2F2F2F_10%,_transparent_60%)]">
@@ -147,48 +128,31 @@ const About = () => {
           {/* Línea central del timeline */}
           <div className="absolute w-3/4 h-1 bg-gray-600"></div>
 
+          {/* Mapeo de experiencias */}
           {experiences.map((exp) => (
             <div
               key={exp.id}
               className="relative cursor-pointer text-center"
               onClick={() => setSelectedExperience(exp)}
             >
-              {/* Línea vertical hacia la experiencia */}
+              {/* Línea vertical */}
               <div className="absolute left-1/2 transform -translate-x-1/2 top-full w-1 h-8 bg-gray-600"></div>
+
+              {/* Contenedor de la experiencia */}
               <div className="bg-gray-800 text-white p-3 px-4 rounded-md text-sm mt-8 shadow-md hover:bg-gray-700 transition duration-300">
-                <p className="font-bold">{exp.title}</p>
-                <p className="text-xs text-gray-400">{exp.period}</p>
+                <p className="font-bold">{exp.role}</p>
+                <p className="text-xs text-gray-400">
+                  {exp.start_date} - {exp.end_date || "Present"}
+                </p>
               </div>
             </div>
           ))}
-        </div>
 
-        {/* Popup de experiencia */}
-        {selectedExperience && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-            onClick={() => setSelectedExperience(null)}
-          >
-            <div
-              className="bg-gray-900 p-6 rounded-lg shadow-lg w-96 relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="absolute top-2 right-3 text-gray-400 hover:text-white"
-                onClick={() => setSelectedExperience(null)}
-              >
-                ✖
-              </button>
-              <h3 className="text-xl font-bold text-white">
-                {selectedExperience.title}
-              </h3>
-              <p className="text-gray-400 text-sm mb-3">
-                {selectedExperience.period}
-              </p>
-              <p className="text-gray-300">{selectedExperience.description}</p>
-            </div>
-          </div>
-        )}
+          <ExperienceCard
+            experience={selectedExperience}
+            onClose={() => selectedExperience(null)}
+          />
+        </div>
       </section>
 
       {/* Sección de Certificados */}
