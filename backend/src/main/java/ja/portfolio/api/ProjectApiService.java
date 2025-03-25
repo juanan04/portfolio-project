@@ -1,6 +1,13 @@
 package ja.portfolio.api;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,54 +37,71 @@ public class ProjectApiService {
 
 	@Autowired
 	private ProjectService service;
-	
+
 	@GetMapping
 	@Operation(summary = "Get all projects")
 	public List<Project> getAllProjects() {
 		return service.getAllProjects();
 	}
-	
+
 	@GetMapping("/{id}")
 	@Operation(summary = "Get projects by ID", description = "You can get a project by ID.")
 	public ResponseEntity<?> getProjectById(@PathVariable Long id) {
-	    try {
-	        Project project = service.getProjectById(id);
-	        return ResponseEntity.ok(project);
-	    } catch (ProjectNotFoundException e) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-	    }
+		try {
+			Project project = service.getProjectById(id);
+			return ResponseEntity.ok(project);
+		} catch (ProjectNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 
-	
 	@GetMapping("/search")
 	@Operation(summary = "Get projects by filter", description = "Allows you to get a project by filter (title or technology)")
-	public List<Project> getProjectsByFilter (String filtro) {
+	public List<Project> getProjectsByFilter(String filtro) {
 		return service.getProjectsByFilter(filtro);
 	}
-	
+
 	@PostMapping
 	@Operation(summary = "Create Project", description = "Allows you to create a new project")
 	public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
 		Project savedProject = service.saveProject(project);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedProject);
 	}
-	
+
 	@PutMapping("/{id}")
 	@Operation(summary = "Update Project", description = "Allows you to update an existing project.")
-	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project updatedProject) throws ProjectNotFoundException {
-	    Project project = service.getProjectById(id);
-	    if (project == null) {
-	        return ResponseEntity.notFound().build();
-	    }
+	public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project updatedProject)
+			throws ProjectNotFoundException {
+		Project project = service.getProjectById(id);
+		if (project == null) {
+			return ResponseEntity.notFound().build();
+		}
 
-	    // Solo actualiza los campos que no sean nulos
-	    if (updatedProject.getTitle() != null) project.setTitle(updatedProject.getTitle());
-	    if (updatedProject.getDescription() != null) project.setDescription(updatedProject.getDescription());
-	    if (updatedProject.getTechnologies() != null) project.setTechnologies(updatedProject.getTechnologies());
+		// Solo actualiza los campos que no sean nulos
+		if (updatedProject.getTitle() != null)
+			project.setTitle(updatedProject.getTitle());
+		if (updatedProject.getDescription() != null)
+			project.setDescription(updatedProject.getDescription());
+		if (updatedProject.getTechnologies() != null)
+			project.setTechnologies(updatedProject.getTechnologies());
 
-	    return ResponseEntity.ok(service.saveProject(project));
+		return ResponseEntity.ok(service.saveProject(project));
 	}
-	
+
+	@PostMapping("/upload-image")
+	public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+		String uploadsDir = "src/main/resources/static/assets/projects/";
+		File dir = new File(uploadsDir);
+		if (!dir.exists())
+			dir.mkdirs();
+
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+		Path filePath = Paths.get(uploadsDir, uniqueFileName);
+		Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+		return ResponseEntity.ok(uniqueFileName);
+	}
+
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete Project", description = "Allows you to delte an existing project with the ID.")
 	public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
